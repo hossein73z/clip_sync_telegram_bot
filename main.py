@@ -15,17 +15,20 @@ logging.basicConfig(
 async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     print(update.message.text)
     user_id = os.environ.get('ADMIN_ID', '')
+    if update.message.text == 'Retrieve from pc':
+        text = pyperclip.paste()
 
-    if not user_id:
-        text = 'You are registered as admin and can use this bot'
-        os.environ.setdefault('ADMIN_ID', str(update.effective_user.id))
-        user_id = os.environ.get('ADMIN_ID', '')
-    elif update.effective_user.id != int(user_id):
-        text = 'This bot is built for personal use and only admin can use it.'
-        print(user_id)
     else:
-        pyperclip.copy(update.message.text)
-        text = 'Message Received!'
+        if not user_id:
+            text = 'You are registered as admin and can use this bot'
+            os.environ.setdefault('ADMIN_ID', str(update.effective_user.id))
+            user_id = os.environ.get('ADMIN_ID', '')
+        elif update.effective_user.id != int(user_id):
+            text = 'This bot is built for personal use and only admin can use it.'
+            print(user_id)
+        else:
+            pyperclip.copy(update.message.text)
+            text = 'Message Received!'
 
     markup = ReplyKeyboardMarkup([[KeyboardButton('Retrieve from pc')]], True)
     await context.bot.send_message(user_id, text, reply_markup=markup)
