@@ -89,10 +89,10 @@ class Database:
         print(f'add: Adding new item to {bright(table)} table')
 
         pairs = my_object.__dict__
-        pairs.pop('id')
+        if pairs['id'] is None: pairs.pop('id')
         keys_str = ', '.join(pairs.keys())
         vals_str = ', '.join(map(lambda s: f"'{s}'", pairs.values()))
-        sql = f"INSERT INTO {self.PERSONS} ({keys_str}) VALUES ({vals_str})"
+        sql = f"INSERT INTO {table} ({keys_str}) VALUES ({vals_str})"
 
         print('add: ' + cyan('Completed sql query: ') + sql)
         connection = self.connect()
