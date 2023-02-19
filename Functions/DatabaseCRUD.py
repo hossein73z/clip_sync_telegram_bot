@@ -1,8 +1,7 @@
 import sqlite3
-from Functions.Coloring import red, green, bright, cyan, yellow, magenta
+from Functions.Coloring import red, green, bright, cyan
 from Objects import MyObject
 from Objects.Buttton import Button
-from Objects.Person import Person
 
 
 class Database:
@@ -92,7 +91,8 @@ class Database:
         print(f'add: Adding new item to {bright(table)} table')
 
         pairs = my_object.__dict__
-        if pairs['id'] is None: pairs.pop('id')
+        if pairs['id'] is None:
+            pairs.pop('id')
         keys_str = ', '.join(pairs.keys())
         vals_str = ', '.join(map(lambda s: f"'{s}'", pairs.values()))
         sql = f"INSERT INTO {table} ({keys_str}) VALUES ({vals_str})"
