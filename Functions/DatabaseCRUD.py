@@ -57,7 +57,7 @@ class Database:
                             text TEXT NOT NULL,
                             admin_key BOOL NOT NULL DEFAULT FALSE,
                             messages TEXT,
-                            belong INT NOT NULL DEFAULT 0,
+                            belong INT,
                             btns TEXT,
                             sp_btns TEXT
                             ) """)
