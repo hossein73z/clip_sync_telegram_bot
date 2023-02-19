@@ -1,6 +1,8 @@
 import sqlite3
 from Functions.Coloring import red, green, bright, cyan, yellow, magenta
-from Objects import Person, MyObject
+from Objects import MyObject
+from Objects.Buttton import Button
+from Objects.Person import Person
 
 
 class Database:
@@ -18,13 +20,14 @@ class Database:
 
         # Add default values to tables
         buttons = [
-            ()
+            Button(0, 'Main page', False, None, None, "[[2],[3]]", "[0]"),
+            Button(1, 'Button 2', False, None, 0, None, "[0]"),
+            Button(3, 'Button 3', False, None, 0, "[[4]]", "[0]"),
+            Button(4, 'Button 4', False, None, 3, None, "[0]")
         ]
-        connection = self.connect()
-        cursor = connection.cursor()
 
-        def add_to_table():
-            pass
+        for button in buttons:
+            self.add(self.BUTTONS, button)
 
     @staticmethod
     def connect():
