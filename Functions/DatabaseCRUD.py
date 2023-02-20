@@ -20,9 +20,9 @@ def init():
     # Add default values to tables
     buttons = [
         Button(0, 'Main page', 0, None, None, "[[2],[3]]", None),
-        Button(1, 'Button 2', 0, None, 0, None, "[0]"),
-        Button(2, 'Button 3', 0, None, 0, "[[3]]", "[0]"),
-        Button(3, 'Button 4', 0, None, 2, None, "[0]")
+        Button(1, 'Button 2', 0, None, 0, None, "[[0]]"),
+        Button(2, 'Button 3', 0, None, 0, "[[3]]", "[[0]]"),
+        Button(3, 'Button 4', 0, None, 2, None, "[[0]]")
     ]
     sp_buttons = [
         SPButton(0, '🔙 Back 🔙', 0)
