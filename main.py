@@ -4,6 +4,7 @@ from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
 from Functions.DatabaseCRUD import read, add, init as database_init, PERSONS_TABLE
 from Functions.Coloring import magenta, red
+from Functions.ButtonFunctions import get_btn_list
 from Objects.Person import Person
 
 logging.basicConfig(
@@ -24,6 +25,7 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 persons = read(PERSONS_TABLE, Person, chat_id=person.chat_id)
         else:
             text = 'Wellcome ' + str(persons[0].first_name)
+            get_btn_list(persons[0], 0)
 
         markup = ReplyKeyboardMarkup([[KeyboardButton('Retrieve from pc')]], True)
         await context.bot.send_message(

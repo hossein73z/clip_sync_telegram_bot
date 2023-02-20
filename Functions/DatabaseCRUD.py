@@ -1,5 +1,5 @@
 import sqlite3
-from Functions.Coloring import red, green, bright, cyan
+from Functions.Coloring import red, green, bright, cyan, magenta
 from Objects import MyObject
 from Objects.Buttton import Button
 from Objects.SPButtton import SPButton
@@ -21,8 +21,8 @@ def init():
     buttons = [
         Button(0, 'Main page', False, None, None, "[[2],[3]]", None),
         Button(1, 'Button 2', False, None, 0, None, "[0]"),
-        Button(3, 'Button 3', False, None, 0, "[[4]]", "[0]"),
-        Button(4, 'Button 4', False, None, 3, None, "[0]")
+        Button(2, 'Button 3', False, None, 0, "[[3]]", "[0]"),
+        Button(3, 'Button 4', False, None, 2, None, "[0]")
     ]
     sp_buttons = [
         SPButton(0, '🔙 Back 🔙', False)
@@ -96,10 +96,9 @@ def add(table: str, my_object: MyObject):
     print(f'add: Adding new item to {bright(table)} table')
 
     pairs = my_object.__dict__
-    if pairs['id'] is None:
-        pairs.pop('id')
+    pairs = {key: val for key, val in pairs.items() if val is not None}
     keys_str = ', '.join(pairs.keys())
-    vals_str = ', '.join(map(lambda s: f"'{s}'", pairs.values()))
+    vals_str = ', '.join(map(lambda s: f"'{s}'" if type(s) == str or list else s, pairs.values()))
     sql = f"INSERT INTO {table} ({keys_str}) VALUES ({vals_str})"
 
     print('add: ' + cyan('Completed sql query: ') + sql)
