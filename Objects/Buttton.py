@@ -39,4 +39,4 @@ class Button(MyObject):
                 self.sp_btns = json.loads(values[6]) if values[6] is not None else None
 
         except IndexError as e:
-            print('Person: ' + red(str(e)))
+            print('Button: ' + red(str(e)))
