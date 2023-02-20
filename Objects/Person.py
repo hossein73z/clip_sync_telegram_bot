@@ -3,16 +3,6 @@ from Objects.MyObject import MyObject
 
 
 class Person(MyObject):
-    id: int = 0
-    chat_id: int = 0
-    first_name: str = None
-    last_name: str = None
-    username: str = None
-    progress: str = None
-    is_admin: bool = False
-    btn_id: int = 0
-    sp_btn_id: int = 0
-
     def __init__(self, *values):
         """id: int = 0\n
         chat_id: int = 0\n
@@ -20,7 +10,7 @@ class Person(MyObject):
         last_name: str = ''\n
         username: str = ''\n
         progress: str = ''\n
-        is_admin: bool = False\n
+        admin: int = 0\n
         btn_id: int = 0\n
         sp_btn_id: int = 0"""
 
@@ -37,7 +27,7 @@ class Person(MyObject):
             if len(values) >= 6:
                 self.progress = values[5] if values[5] is not (None or "") else None
             if len(values) >= 7:
-                self.is_admin = values[6]
+                self.admin = values[6]
             if len(values) >= 8:
                 self.last_button_id = values[7]
             if len(values) >= 9:

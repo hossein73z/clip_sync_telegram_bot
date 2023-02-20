@@ -4,19 +4,11 @@ from Objects.MyObject import MyObject
 
 
 class Button(MyObject):
-    id: int = 0
-    text: str = ''
-    admin_key: bool = False
-    messages: str = ''
-    belong: int = 0
-    btns: str = ''
-    sp_btns: str = ''
-
     def __init__(self, *values):
         """
         id: int = 0\n
         text: str = ''\n
-        admin_key: bool = False\n
+        admin: int = 0\n
         messages: str = ''\n
         belong: int = 0\n
         btns: str = ''\n
@@ -28,7 +20,7 @@ class Button(MyObject):
             if len(values) >= 2:
                 self.text = values[1].decode('UTF-8') if type(values[1]) is bytes else values[1]
             if len(values) >= 3:
-                self.admin_key = values[2]
+                self.admin = values[2]
             if len(values) >= 4:
                 self.messages = json.loads(values[3]) if values[3] is not None else None
             if len(values) >= 5:
