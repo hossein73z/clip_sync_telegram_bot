@@ -37,7 +37,7 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 def main() -> None:
     database_init()
-    application = ApplicationBuilder().token('6138511215:AAFco3auaVVWmH8oGuAqK6FRJ1ODkvq8s7A').build()
+    application = ApplicationBuilder().token('6138511215:AAGwo0MQGYXOUBgNhA_TxvwH2xpxnQgb_-I').build()
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), process))
     try:
         application.run_polling()
