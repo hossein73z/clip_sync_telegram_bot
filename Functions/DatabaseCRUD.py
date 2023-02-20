@@ -19,13 +19,13 @@ def init():
 
     # Add default values to tables
     buttons = [
-        Button(0, 'Main page', False, None, None, "[[2],[3]]", None),
-        Button(1, 'Button 2', False, None, 0, None, "[0]"),
-        Button(2, 'Button 3', False, None, 0, "[[3]]", "[0]"),
-        Button(3, 'Button 4', False, None, 2, None, "[0]")
+        Button(0, 'Main page', 0, None, None, "[[2],[3]]", None),
+        Button(1, 'Button 2', 0, None, 0, None, "[0]"),
+        Button(2, 'Button 3', 0, None, 0, "[[3]]", "[0]"),
+        Button(3, 'Button 4', 0, None, 2, None, "[0]")
     ]
     sp_buttons = [
-        SPButton(0, '🔙 Back 🔙', False)
+        SPButton(0, '🔙 Back 🔙', 0)
     ]
 
     for button in buttons:
@@ -54,7 +54,7 @@ def create_table(*table_names: str):
                         last_name TEXT,
                         username TEXT,
                         progress TEXT,
-                        is_admin BOOL NOT NULL DEFAULT FALSE,
+                        admin int NOT NULL DEFAULT 0,
                         btn_id INT NOT NULL DEFAULT 0,
                         sp_btn_id INT
                         ) """)
@@ -62,7 +62,7 @@ def create_table(*table_names: str):
                 cursor.execute(f"""CREATE TABLE IF NOT EXISTS {BUTTONS_TABLE} (
                         id INTEGER PRIMARY KEY,
                         text TEXT NOT NULL,
-                        admin_key BOOL NOT NULL DEFAULT FALSE,
+                        admin int NOT NULL DEFAULT 0,
                         messages TEXT,
                         belong INT,
                         btns TEXT,
@@ -72,7 +72,7 @@ def create_table(*table_names: str):
                 cursor.execute(f"""CREATE TABLE IF NOT EXISTS {SP_BUTTONS_TABLE} (
                         id INTEGER PRIMARY KEY,
                         text TEXT NOT NULL,
-                        admin_key BOOL NOT NULL DEFAULT FALSE
+                        admin int NOT NULL DEFAULT 0
                         ) """)
             elif table_name == SETTINGS_TABLE:
                 cursor.execute(f"""CREATE TABLE IF NOT EXISTS {SETTINGS_TABLE} (
