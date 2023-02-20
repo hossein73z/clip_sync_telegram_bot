@@ -1,5 +1,5 @@
 import sqlite3
-from Functions.Coloring import red, green, bright, cyan, magenta
+from Functions.Coloring import red, green, bright, cyan, magenta, yellow
 from Objects import MyObject
 from Objects.Buttton import Button
 from Objects.SPButtton import SPButton
@@ -19,7 +19,7 @@ def init():
 
     # Add default values to tables
     buttons = [
-        Button(0, 'Main page', 0, None, None, "[[2],[3]]", None),
+        Button(0, 'Main page', 0, None, None, "[[1],[2]]", None),
         Button(1, 'Button 2', 0, None, 0, None, "[[0]]"),
         Button(2, 'Button 3', 0, None, 0, "[[3]]", "[[0]]"),
         Button(3, 'Button 4', 0, None, 2, None, "[[0]]")
@@ -93,7 +93,7 @@ def create_table(*table_names: str):
 
 
 def add(table: str, my_object: MyObject):
-    print(f'add: Adding new item to {bright(table)} table')
+    print(f'add: {yellow(table)} | Adding new item to {bright(table)} table')
 
     pairs = my_object.__dict__
     pairs = {key: val for key, val in pairs.items() if val is not None}
@@ -107,7 +107,7 @@ def add(table: str, my_object: MyObject):
     try:
         result = cursor.execute(sql)
         connection.commit()
-        print(f'add: {green(f"New item added to {bright(table)} table")}')
+        print(f'add: {yellow(table)} | {green(f"New item added to {bright(table)} table")}')
 
         return result
     except sqlite3.IntegrityError as e:
@@ -130,7 +130,7 @@ def read(table: str, my_object: MyObject, **kwargs):
             ' = '.join((key, "'" + str(val) + "'")) for key, val in kwargs.items())
 
     sql += condition
-    print('read: ' + cyan('Completed sql query: ') + sql)
+    print('read: ' + yellow(table) + ' | ' + cyan('Completed sql query: ') + sql)
 
     # Reading database
     connection = connect()
@@ -145,6 +145,39 @@ def read(table: str, my_object: MyObject, **kwargs):
             items.append(item)
 
         return items if items else None
+
+    except sqlite3.OperationalError as e:
+        print(red(str(e)))
+        return None
+
+    finally:
+        curses.close()
+        connection.close()
+
+
+def edit(table: str, **kwargs):
+    # Create sql query
+    sql = f"UPDATE {table}"
+    id = kwargs.pop('id')
+    condition = ''
+    if len(kwargs):
+        # Managing 'WHERE' statement
+        sql += ' SET '
+        condition = ', '.join(
+            ' = '.join((key, "'" + str(val) + "'")) for key, val in kwargs.items())
+
+    sql += condition + f" WHERE id = {id}"
+    print('edit: ' + yellow(table) + ' | ' + cyan('Completed sql query: ') + sql)
+
+    # Reading database
+    connection = connect()
+    curses = connection.cursor()
+
+    try:
+        fetched = curses.execute(sql).fetchall()
+        connection.commit()
+
+        return fetched if not None else None
 
     except sqlite3.OperationalError as e:
         print(red(str(e)))
