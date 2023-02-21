@@ -1,5 +1,5 @@
 import sqlite3
-from Functions.Coloring import red, green, bright, cyan, magenta, yellow
+from Functions.Coloring import red, green, bright, cyan, yellow
 from Objects import MyObject
 from Objects.Buttton import Button
 from Objects.SPButtton import SPButton
@@ -19,13 +19,13 @@ def init():
 
     # Add default values to tables
     buttons = [
-        Button(0, 'Main page', 0, None, None, "[[1],[2]]", None),
-        Button(1, 'Button 2', 0, None, 0, None, "[[0]]"),
-        Button(2, 'Button 3', 0, None, 0, "[[3]]", "[[0]]"),
-        Button(3, 'Button 4', 0, None, 2, None, "[[0]]")
+        Button(id=0, text='Main page', admin=0, btns="[[1],[2]]"),
+        Button(id=1, text='Button 2', admin=0, belong=0, sp_btns="[[0]]"),
+        Button(id=2, text='Button 3', admin=0, belong=0, btns="[[3]]", sp_btns="[[0]]"),
+        Button(id=3, text='Button 4', admin=0, belong=2, sp_btns="[[0]]")
     ]
     sp_buttons = [
-        SPButton(0, '🔙 Back 🔙', 0)
+        SPButton(id=0, text='🔙 Back 🔙', admin=0)
     ]
 
     for button in buttons:
@@ -141,7 +141,8 @@ def read(table: str, my_object: MyObject, **kwargs):
 
         items: list[MyObject] = []
         for temp in fetched:
-            item = my_object(*temp)
+            print(str(type(temp))+': '+str(temp))
+            item = my_object(values=temp)
             items.append(item)
 
         return items if items else None

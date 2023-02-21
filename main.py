@@ -1,6 +1,6 @@
 import telegram.error
 import logging
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
 from Functions.DatabaseCRUD import read, add, init as database_init, PERSONS_TABLE, BUTTONS_TABLE, edit
 from Functions.Coloring import magenta, red, bright
@@ -23,7 +23,10 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if not persons:
             # Person is not already registered
 
-            result = add(PERSONS_TABLE, Person(None, user.id, user.first_name, user.last_name, user.username))
+            result = add(PERSONS_TABLE, Person(chat_id=user.id,
+                                               first_name=user.first_name,
+                                               last_name=user.last_name,
+                                               username=user.username))
             if result:
                 # New person added successfully
 
@@ -33,7 +36,8 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
                     person = persons[0]
                     chat_id = person.id
-                    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=get_btn_list(person, person.last_button_id))
+                    reply_markup = ReplyKeyboardMarkup(
+                        resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
                     text = 'Wellcome to the Bot'
                 else:
                     # Somthing is wrong to read new person
@@ -65,7 +69,8 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     edit(PERSONS_TABLE, id=person.id, btn_id=pressed_btn.id)
                     # Person updated successfully
 
-                    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=get_btn_list(person, pressed_btn.id))
+                    reply_markup = ReplyKeyboardMarkup(
+                        resize_keyboard=True, keyboard=get_btn_list(person, pressed_btn.id))
                     text = update.message.text
 
                     # Somthing went wrong during updating person
@@ -80,10 +85,11 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     if pressed_btn.id == 0:
                         # Back button pressed
 
-                        last_btns: list[Button] = read(BUTTONS_TABLE, Button, id=person.last_button_id)
+                        last_btns: list[Button] = read(BUTTONS_TABLE, Button, id=person.btn_id)
                         if last_btns:
                             edit(PERSONS_TABLE, id=person.id, btn_id=last_btns[0].belong)
-                            reply_markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=get_btn_list(person, last_btns[0].belong))
+                            reply_markup = ReplyKeyboardMarkup(
+                                resize_keyboard=True, keyboard=get_btn_list(person, last_btns[0].belong))
                             text = update.message.text
                         else:
                             # No way back
@@ -98,7 +104,8 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             else:
                 # Received text was not a button
 
-                reply_markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=get_btn_list(person, person.last_button_id))
+                reply_markup = ReplyKeyboardMarkup(
+                    resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
                 text = update.message.text
 
         await context.bot.send_message(

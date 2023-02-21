@@ -1,4 +1,4 @@
-from Functions.Coloring import red, magenta, yellow, bright
+from Functions.Coloring import red, bright
 from Objects.Person import Person
 from Objects.Buttton import Button
 from Objects.SPButtton import SPButton
@@ -34,7 +34,7 @@ def get_btn_list(person: Person, button_id: int):
 
 def get_pressed_btn(person: Person, text: str):
     # Get pressed button from database
-    raw_btns: list[Button] = read(BUTTONS_TABLE, Button, admin=person.admin, belong=person.last_button_id, text=text)
+    raw_btns: list[Button] = read(BUTTONS_TABLE, Button, admin=person.admin, belong=person.btn_id, text=text)
 
     if raw_btns:
         # Received text was a normal button. Returning
@@ -44,7 +44,7 @@ def get_pressed_btn(person: Person, text: str):
         pressed_btn = None
 
         # Get last button from database
-        last_btns: list[Button] = read(BUTTONS_TABLE, Button, admin=person.admin, id=person.last_button_id)
+        last_btns: list[Button] = read(BUTTONS_TABLE, Button, admin=person.admin, id=person.btn_id)
         if last_btns:
             sp_btn_ids = []
             try:
