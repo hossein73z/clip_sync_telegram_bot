@@ -126,8 +126,10 @@ def read(table: str, my_object: MyObject, **kwargs):
     if len(kwargs):
         # Managing 'WHERE' statement
         sql += ' WHERE '
-        condition = ' AND '.join(
-            ' = '.join((key, "'" + str(val) + "'")) for key, val in kwargs.items())
+        condition = ' AND '.join((
+                                     ' in '.join((key, "(" + ", ".join([str(i) for i in val]) + ")")))
+                                 if type(val) == set else
+                                 ' = '.join((key, "'" + str(val) + "'")) for key, val in kwargs.items())
 
     sql += condition
     print('read: ' + yellow(table) + ' | ' + cyan('Completed sql query: ') + sql)
@@ -141,7 +143,6 @@ def read(table: str, my_object: MyObject, **kwargs):
 
         items: list[MyObject] = []
         for temp in fetched:
-            print(str(type(temp))+': '+str(temp))
             item = my_object(values=temp)
             items.append(item)
 

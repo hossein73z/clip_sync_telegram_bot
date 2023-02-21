@@ -36,35 +36,19 @@ def get_pressed_btn(person: Person, text: str):
     # Get pressed button from database
     raw_btns: list[Button] = read(BUTTONS_TABLE, Button, admin=person.admin, belong=person.btn_id, text=text)
 
-    if raw_btns:
-        # Received text was a normal button. Returning
+    if raw_btns:  # Received text was a normal button. Returning
         return {'button': raw_btns[0], 'is_special': False}
-    else:
-        # Received text was not a normal button
-        pressed_btn = None
 
-        # Get last button from database
+    else:  # Received text was not a normal button
+
         last_btns: list[Button] = read(BUTTONS_TABLE, Button, admin=person.admin, id=person.btn_id)
-        if last_btns:
-            sp_btn_ids = []
-            try:
-                for js in last_btns[0].sp_btns:
-                    for j in js:
-                        sp_btn_ids.append(j)
+        ids = [item for items in last_btns[0].sp_btns for item in items]  # Create a list of ids from nested list
 
-                if sp_btn_ids:
-                    raw_sp_btns = read(SP_BUTTONS_TABLE, SPButton, admin=person.admin)
-                    for sp_btn_id in sp_btn_ids:
-                        for raw_sp_btn in raw_sp_btns:
-                            if raw_sp_btn.text == text and raw_sp_btn.id == sp_btn_id:
-                                pressed_btn = {'button': raw_sp_btn, 'is_special': True}
-                                break
-
-                    return pressed_btn
-            except TypeError as e:
-                print("get_pressed_btn: " + red(e))
-
-        else:
-            # Major Error!!
-            print('get_pressed_btn: ' + red(bright('User "btn_id" matches to no stored buttons')))
-            return None
+        if ids:
+            # Find pressed button using text and id list
+            return {'button': read(SP_BUTTONS_TABLE,
+                                   SPButton,
+                                   admin=person.admin,
+                                   id=set(ids),
+                                   text=text)[0],
+                    'is_special': True}
