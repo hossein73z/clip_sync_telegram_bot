@@ -1,10 +1,7 @@
-from Functions.Coloring import red, bright
-from Objects.Person import Person
-from Objects.Buttton import Button
-from Objects.SPButtton import SPButton
-from Functions.DatabaseCRUD import read, SP_BUTTONS_TABLE, BUTTONS_TABLE
-
 from telegram import KeyboardButton
+
+from Functions.DatabaseCRUD import BUTTONS_TABLE, SP_BUTTONS_TABLE, read
+from MyObjects import Person, Button, SPButton
 
 
 def get_btn_list(person: Person, button_id: int):

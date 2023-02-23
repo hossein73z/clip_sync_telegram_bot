@@ -1,13 +1,13 @@
-import telegram.error
 import logging
+
+import telegram
 from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
-from Functions.DatabaseCRUD import read, add, init as database_init, PERSONS_TABLE, BUTTONS_TABLE, edit
-from Functions.Coloring import magenta, red, bright
+from telegram.ext import ContextTypes, ApplicationBuilder, MessageHandler, filters
+
 from Functions.ButtonFunctions import get_btn_list, get_pressed_btn
-from Objects.Buttton import Button
-from Objects.Person import Person
-from Objects.SPButtton import SPButton
+from Functions.Coloring import magenta, red, bright
+from Functions.DatabaseCRUD import init as database_init, PERSONS_TABLE, BUTTONS_TABLE, read, add, edit
+from MyObjects import Person, Button, SPButton
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)

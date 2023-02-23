@@ -1,8 +1,7 @@
 import sqlite3
-from Functions.Coloring import red, green, bright, cyan, yellow
-from Objects import MyObject
-from Objects.Buttton import Button
-from Objects.SPButtton import SPButton
+
+from Functions.Coloring import green, bright, red, yellow, cyan
+from MyObjects import Button, SPButton
 
 PERSONS_TABLE = 'persons'
 BUTTONS_TABLE = 'raw_btns'
@@ -92,7 +91,7 @@ def create_table(*table_names: str):
             connection.close()
 
 
-def add(table: str, my_object: MyObject):
+def add(table: str, my_object):
     print(f'add: {yellow(table)} | Adding new item to {bright(table)} table')
 
     pairs = my_object.__dict__
@@ -118,7 +117,7 @@ def add(table: str, my_object: MyObject):
         connection.close()
 
 
-def read(table: str, my_object: MyObject, **kwargs):
+def read(table: str, my_object, **kwargs):
     # Create sql query
     sql = f"SELECT * FROM {table}"
 
@@ -141,7 +140,7 @@ def read(table: str, my_object: MyObject, **kwargs):
     try:
         fetched = curses.execute(sql).fetchall()
 
-        items: list[MyObject] = []
+        items = []
         for temp in fetched:
             item = my_object(values=temp)
             items.append(item)
