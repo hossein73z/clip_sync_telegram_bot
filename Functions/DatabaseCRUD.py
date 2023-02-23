@@ -130,8 +130,7 @@ def read(table: str, my_object, **kwargs):
     if len(kwargs):
         # Managing 'WHERE' statement
         sql += ' WHERE '
-        condition = ' AND '.join((
-                                     ' in '.join((key, "(" + ", ".join([str(i) for i in val]) + ")")))
+        condition = ' AND '.join((' in '.join((key, "(" + ", ".join([str(i) for i in val]) + ")")))
                                  if type(val) == set else
                                  ' = '.join((key, "'" + str(val) + "'")) for key, val in kwargs.items())
 
@@ -140,14 +139,15 @@ def read(table: str, my_object, **kwargs):
 
     # Reading database
     connection = connect()
-    curses = connection.cursor()
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
 
     try:
-        fetched = curses.execute(sql).fetchall()
+        fetched = cursor.execute(sql).fetchall()
 
         items = []
         for temp in fetched:
-            item = my_object(values=temp)
+            item = my_object(**temp)
             items.append(item)
 
         return items if items else None
@@ -157,7 +157,7 @@ def read(table: str, my_object, **kwargs):
         return None
 
     finally:
-        curses.close()
+        cursor.close()
         connection.close()
 
 
@@ -177,10 +177,10 @@ def edit(table: str, **kwargs):
 
     # Reading database
     connection = connect()
-    curses = connection.cursor()
+    cursor = connection.cursor()
 
     try:
-        fetched = curses.execute(sql).fetchall()
+        fetched = cursor.execute(sql).fetchall()
         connection.commit()
 
         return fetched if not None else None
@@ -190,5 +190,5 @@ def edit(table: str, **kwargs):
         return None
 
     finally:
-        curses.close()
+        cursor.close()
         connection.close()

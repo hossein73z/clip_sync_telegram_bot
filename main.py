@@ -70,6 +70,7 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
                         last_btns: list[Button] = read(BUTTONS_TABLE, Button, id=person.btn_id)
                         if last_btns:
+                            print(last_btns[0].to_json())
                             edit(PERSONS_TABLE, id=person.id, btn_id=last_btns[0].belong)
                             reply_markup = ReplyKeyboardMarkup(
                                 resize_keyboard=True, keyboard=get_btn_list(person, last_btns[0].belong))
