@@ -46,9 +46,6 @@ def get_pressed_btn(person: Person, text: str):
 
         if ids:
             # Find pressed button using text and id list
-            return {'button': read(SP_BUTTONS_TABLE,
-                                   SPButton,
-                                   admin=person.admin,
-                                   id=set(ids),
-                                   text=text)[0],
-                    'is_special': True}
+            sp_btns = read(SP_BUTTONS_TABLE, SPButton, admin=person.admin, id=set(ids), text=text)
+            if sp_btns:
+                return {'button': sp_btns[0], 'is_special': True}
