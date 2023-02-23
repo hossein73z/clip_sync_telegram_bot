@@ -9,8 +9,8 @@ def get_btn_list(person: Person, button_id: int):
     Get all the buttons from database
 
     :param person: object of Person for last pressed button reference and admin privileges.
-    :param button_id: Id of the button to get its subset buttons
-    :return: array of array of KeyboardButton object
+    :param button_id: ID of the button to get its subset buttons
+    :return: array of array of KeyboardButton object or None if there's no subset buttons
     """
 
     raw_btns: list[Button] = read(BUTTONS_TABLE, Button, admin=person.admin)

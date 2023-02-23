@@ -36,7 +36,7 @@ class Person(MyObject):
                  sp_btn_id: int = 0,
                  values: tuple = ()):
         """
-        Create a Button object.
+        Create a Person object.
         Named and default values are ignored if there is even one additional argument
         Use named arguments or pass the values in this order:
 
@@ -148,7 +148,7 @@ class SPButton(MyObject):
                  admin: int = 0,
                  values: tuple = ()):
         """
-        Create a Button object.
+        Create a SPButton object.
         Named and default values are ignored if there is even one additional argument
         Use named arguments or pass the values in this order:
 
@@ -173,3 +173,36 @@ class SPButton(MyObject):
             self.id = id
             self.text = text
             self.admin = admin
+
+
+class Setting(MyObject):
+    def __init__(self,
+                 id: int = 0,
+                 name: str = '',
+                 value=None,
+                 values: tuple = ()):
+        """
+        Create a Button object.
+        Named and default values are ignored if there is even one additional argument
+        Use named arguments or pass the values in this order:
+
+        :param id: Setting id
+        :param name: Setting name
+        :param value: Setting value
+        :param values:
+        """
+        if len(values) > 0:
+            try:
+                self.id = values[0]
+                if len(values) >= 2:
+                    self.name = values[1].decode('UTF-8') if type(values[1]) is bytes else values[1]
+                if len(values) >= 3:
+                    self.value = values[2].decode('UTF-8') if type(values[2]) is bytes else values[2]
+
+            except IndexError as e:
+                print('Setting: ' + red(str(e)))
+
+        else:
+            self.id = id
+            self.name = name
+            self.value = value

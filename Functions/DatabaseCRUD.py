@@ -1,7 +1,7 @@
 import sqlite3
 
 from Functions.Coloring import green, bright, red, yellow, cyan
-from MyObjects import Button, SPButton
+from MyObjects import Button, SPButton, Setting
 
 PERSONS_TABLE = 'persons'
 BUTTONS_TABLE = 'raw_btns'
@@ -26,11 +26,16 @@ def init():
     sp_buttons = [
         SPButton(id=0, text='🔙 Back 🔙', admin=0)
     ]
+    settings = [
+        Setting(id=0, name='BOT_TOKEN', value=None)
+    ]
 
     for button in buttons:
         add(BUTTONS_TABLE, button)
     for sp_button in sp_buttons:
         add(SP_BUTTONS_TABLE, sp_button)
+    for setting in settings:
+        add(SETTINGS_TABLE, setting)
 
 
 def connect():
@@ -77,7 +82,7 @@ def create_table(*table_names: str):
                 cursor.execute(f"""CREATE TABLE IF NOT EXISTS {SETTINGS_TABLE} (
                         id INTEGER PRIMARY KEY,
                         name TEXT NOT NULL,
-                        value text NOT NULL DEFAULT ''
+                        value text DEFAULT NULL
                         ) """)
 
             connection.commit()
@@ -165,7 +170,7 @@ def edit(table: str, **kwargs):
         # Managing 'WHERE' statement
         sql += ' SET '
         condition = ', '.join(
-            ' = '.join((key, "'" + str(val) + "'")) for key, val in kwargs.items())
+            ' = '.join((key, ("'" + str(val) + "'") if val else 'NULL')) for key, val in kwargs.items())
 
     sql += condition + f" WHERE id = {id}"
     print('edit: ' + yellow(table) + ' | ' + cyan('Completed sql query: ') + sql)
