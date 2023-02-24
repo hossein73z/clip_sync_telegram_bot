@@ -24,17 +24,17 @@ class MyObject:
 
 
 class Person(MyObject):
-    id: int
-    chat_id: int
-    first_name: str
-    last_name: str
-    username: str
-    progress: str
-    admin: int
-    btn_id: int
-    sp_btn_id: int
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self,
+                 id: int = 0,
+                 chat_id: int = 0,
+                 first_name: str = '',
+                 last_name: str = '',
+                 username: str = '',
+                 progress: str = '',
+                 admin: int = 0,
+                 btn_id: int = 0,
+                 sp_btn_id: int = 0,
+                 **kwargs):
         """
         Create a Person object.
 
@@ -49,23 +49,30 @@ class Person(MyObject):
         :param sp_btn_id:
         """
 
-        for dictionary in args:
-            for key in dictionary:
-                setattr(self, key, dictionary[key])
+        self.id = id
+        self.chat_id = chat_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.username = username
+        self.progress = json.loads(progress) if progress else None
+        self.admin = admin
+        self.btn_id = btn_id
+        self.sp_btn_id = sp_btn_id
+
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
 
 class Button(MyObject):
-    id: int
-    text: str
-    admin: int
-    messages: str
-    belong: int
-    btns: str
-    sp_btns: str
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self,
+                 id: int = 0,
+                 text: str = '',
+                 admin: int = 0,
+                 messages: str = '',
+                 belong: int = 0,
+                 btns: str = '',
+                 sp_btns: str = '',
+                 **kwargs):
         """
         Create a Button object.
 
@@ -77,23 +84,25 @@ class Button(MyObject):
         :param btns:
         :param sp_btns:
         """
-        for dictionary in args:
-            for key in dictionary:
-                if key in ['btns', 'sp_btns']:
-                    dictionary[key] = json.loads(dictionary[key]) if dictionary[key] else None
-                setattr(self, key, dictionary[key])
+
+        self.id = id
+        self.text = text
+        self.admin = admin
+        self.messages = messages
+        self.belong = belong
+        self.btns = json.loads(btns) if btns else None
+        self.sp_btns = json.loads(sp_btns) if sp_btns else None
+
         for key in kwargs:
-            if key in ['btns', 'sp_btns']:
-                kwargs[key] = json.loads(kwargs[key]) if kwargs[key] else None
             setattr(self, key, kwargs[key])
 
 
 class SPButton(MyObject):
-    id: int
-    text: str
-    admin: int
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self,
+                 id: int = 0,
+                 text: str = '',
+                 admin: int = 0,
+                 **kwargs):
         """
         Create a SPButton object.
 
@@ -102,19 +111,20 @@ class SPButton(MyObject):
         :param admin:
         """
 
-        for dictionary in args:
-            for key in dictionary:
-                setattr(self, key, dictionary[key])
+        self.id = id
+        self.text = text
+        self.admin = admin
+
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
 
 class Setting(MyObject):
-    id: int
-    name: str
-    value = None,
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self,
+                 id: int = 0,
+                 name: str = '',
+                 value=None,
+                 **kwargs):
         """
         Create a Button object.
 
@@ -122,8 +132,9 @@ class Setting(MyObject):
         :param name: Setting name
         :param value: Setting value
         """
-        for dictionary in args:
-            for key in dictionary:
-                setattr(self, key, dictionary[key])
+        self.id = id
+        self.name = name
+        self.value = value
+
         for key in kwargs:
             setattr(self, key, kwargs[key])

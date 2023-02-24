@@ -18,10 +18,10 @@ def init():
 
     # Add default values to tables
     buttons = [
-        Button(id=0, text='Main page', admin=0, btns="[[1],[2]]"),
-        Button(id=1, text='Button 2', admin=0, belong=0, sp_btns="[[0]]"),
-        Button(id=2, text='Button 3', admin=0, belong=0, btns="[[3]]", sp_btns="[[0]]"),
-        Button(id=3, text='Button 4', admin=0, belong=2, sp_btns="[[0]]")
+        Button(id=0, text='Main page', admin=0, btns='[[1], [2]]'),
+        Button(id=1, text='Button 2', admin=0, belong=0, sp_btns='[[0]]'),
+        Button(id=2, text='Button 3', admin=0, belong=0, btns='[[3]]', sp_btns='[[0]]'),
+        Button(id=3, text='Button 4', admin=0, belong=2, sp_btns='[[0]]')
     ]
     sp_buttons = [
         SPButton(id=0, text='🔙 Back 🔙', admin=0)
@@ -147,7 +147,7 @@ def read(table: str, my_object, **kwargs):
 
         items = []
         for temp in fetched:
-            item = my_object(**temp)
+            item = my_object(**dict(temp))
             items.append(item)
 
         return items if items else None
@@ -170,7 +170,7 @@ def edit(table: str, **kwargs):
         # Managing 'WHERE' statement
         sql += ' SET '
         condition = ', '.join(
-            ' = '.join((key, ("'" + str(val) + "'") if val else 'NULL')) for key, val in kwargs.items())
+            ' = '.join((key, ("'" + str(val) + "'") if val is not None else 'NULL')) for key, val in kwargs.items())
 
     sql += condition + f" WHERE id = {id}"
     print('edit: ' + yellow(table) + ' | ' + cyan('Completed sql query: ') + sql)
