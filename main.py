@@ -1,5 +1,6 @@
 import logging
 
+import pyperclip
 import telegram
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes, ApplicationBuilder, MessageHandler, filters
@@ -17,6 +18,7 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     print(magenta('Received Message: ') + update.message.text)
     try:
+        parse_mode = None
 
         # Find person in the database
         persons: list[Person] = read(PERSONS_TABLE, Person, chat_id=user.id)
@@ -63,6 +65,10 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         resize_keyboard=True, keyboard=get_btn_list(person, pressed_btn.id))
                     text = update.message.text
 
+                    if pressed_btn.id == 1:
+                        text = 'Any text you type in here will be added to your pc clipboard.\n'
+                        text += 'Use ((Back)) button to stop.'
+
                 else:  # Pressed button was special
 
                     pressed_btn: SPButton = pressed_dict['button']
@@ -80,16 +86,35 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                             reply_markup = None
                             text = 'Alert'
 
+                    elif pressed_btn.id == 2:  # Retrieve PC clipboard
+                        text = r'Below is the latest text copied by your Pc\. '
+                        text += 'You can touch the text once to coppy that on your new device:\n\n'
+
+                        text += "`{copied}`".format(copied=pyperclip.paste().replace("\\", "\\\\").replace("`", r"\`"))
+                        parse_mode = 'MarkdownV2'
+                        reply_markup = ReplyKeyboardMarkup(
+                            resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
+
                     else:
-                        reply_markup = None
+                        reply_markup = ReplyKeyboardMarkup(
+                            resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
                         text = update.message.text
 
             else:  # Received text was not a button
                 reply_markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
                 text = update.message.text
 
+                if person.btn_id == 1:
+                    pyperclip.copy(text)
+                    text = 'Below text added to PC Clipboard: \n\n'
+                    text += "`{copied}`".format(copied=pyperclip.paste().replace("\\", "\\\\").replace("`", r"\`"))
+                    parse_mode = 'MarkdownV2'
+
         await context.bot.send_message(
-            chat_id if not persons else update.effective_user.id, text, reply_markup=reply_markup)
+            chat_id if not persons else update.effective_user.id,
+            text,
+            reply_markup=reply_markup,
+            parse_mode=parse_mode)
 
     except telegram.error.BadRequest as e:
         print('main: ' + red(str(e)))
