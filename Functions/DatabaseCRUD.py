@@ -18,13 +18,13 @@ def init():
 
     # Add default values to tables
     buttons = [
-        Button(id=0, text='Main page', admin=0, btns='[[1], [2]]'),
-        Button(id=1, text='Button 2', admin=0, belong=0, sp_btns='[[0]]'),
-        Button(id=2, text='Button 3', admin=0, belong=0, btns='[[3]]', sp_btns='[[0]]'),
-        Button(id=3, text='Button 4', admin=0, belong=2, sp_btns='[[0]]')
+        Button(id=0, text='Main page', admin=0, btns='[[1]]', sp_btns='[[2]]'),
+        Button(id=1, text='Send Text To PC 📤', admin=0, belong=0, sp_btns='[[0]]')
     ]
     sp_buttons = [
-        SPButton(id=0, text='🔙 Back 🔙', admin=0)
+        SPButton(id=0, text='🔙 Back 🔙', admin=0),
+        SPButton(id=1, text='❌ Cancel ❌', admin=0),
+        SPButton(id=2, text='Retrieve PC Clipboard 📋', admin=0)
     ]
     settings = [
         Setting(id=0, name='BOT_TOKEN', value=None)
