@@ -1,8 +1,9 @@
+import json
 import logging
 
 import pyperclip
 import telegram
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes, ApplicationBuilder, MessageHandler, filters
 
 from Functions.ButtonFunctions import get_btn_list, get_pressed_btn
@@ -23,33 +24,91 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         # Find person in the database
         persons: list[Person] = read(PERSONS_TABLE, Person, chat_id=user.id)
         if not persons:  # Person is not already registered
+            admins: list[Person] = read(PERSONS_TABLE, Person, admin=1)
+            if not admins:  # There is no admin registered on database
+                result = add(PERSONS_TABLE, Person(chat_id=user.id,
+                                                   first_name=user.first_name,
+                                                   last_name=user.last_name,
+                                                   username=user.username))
 
-            result = add(PERSONS_TABLE, Person(chat_id=user.id,
-                                               first_name=user.first_name,
-                                               last_name=user.last_name,
-                                               username=user.username))
+                if result:  # New person added successfully
 
-            if result:  # New person added successfully
+                    persons = read(PERSONS_TABLE, Person, chat_id=user.id)
+                    if persons:  # Newly added person read successfully
+                        person = persons[0]
+                        chat_id = person.id
+                        reply_markup = ReplyKeyboardMarkup(
+                            resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
+                        text = 'Wellcome to the Bot'
 
-                persons = read(PERSONS_TABLE, Person, chat_id=user.id)
-                if persons:  # Newly added person read successfully
-                    person = persons[0]
-                    chat_id = person.id
-                    reply_markup = ReplyKeyboardMarkup(
-                        resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
-                    text = 'Wellcome to the Bot'
-                else:  # Somthing is wrong to read new person
+                        await context.bot.send_message(
+                            chat_id if not persons else update.effective_user.id,
+                            text,
+                            reply_markup=reply_markup,
+                            parse_mode=parse_mode)
+
+                    else:  # Somthing is wrong to read new person
+                        chat_id = user.id
+                        reply_markup = None
+                        text = "Can't find the registered user!"
+
+                        await context.bot.send_message(
+                            chat_id if not persons else update.effective_user.id,
+                            text,
+                            reply_markup=reply_markup,
+                            parse_mode=parse_mode)
+
+                else:  # Couldn't add new user!
                     chat_id = user.id
                     reply_markup = None
-                    text = "Can't find the registered user!"
+                    text = "Couldn't add new user!"
 
-            else:  # Couldn't add new user!
-                chat_id = user.id
-                reply_markup = None
-                text = "Couldn't add new user!"
+                    await context.bot.send_message(
+                        chat_id if not persons else update.effective_user.id,
+                        text,
+                        reply_markup=reply_markup,
+                        parse_mode=parse_mode)
+
+            else:  # There is at least one admin registered on database
+                keyboard = [[
+                    InlineKeyboardButton(
+                        text="Accept", callback_data=json.dumps({
+                            'name': 'ADMIN_REQ',
+                            'value': {
+                                'status': 'REJ',
+                                'chat_id': user.id}})),
+                    InlineKeyboardButton(
+                        text="Reject", callback_data=json.dumps({
+                            'name': 'ADMIN_REQ',
+                            'value': {
+                                'status': 'REJ',
+                                'chat_id': user.id}}))
+                ]]
+                reply_markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+                text = 'New person is requesting to use this bot.\n'
+                text += f'Name: {user.first_name} {user.last_name if user.last_name else ""}'
+                text += f'Username: @{user.username} ([Profile](tg://user?id={user.id}))'
+
+                for admin in admins:
+                    await context.bot.send_message(
+                        admin.chat_id,
+                        text,
+                        reply_markup=reply_markup,
+                        parse_mode='MarkdownV2')
+
+                await context.bot.send_message(
+                    user.id,
+                    'Your request for using this bot has been sent to admins. Please be patient',
+                    reply_markup=None,
+                    parse_mode=parse_mode)
 
         else:  # Person already exists on the database
             person = persons[0]
+            person.first_name = user.first_name
+            person.last_name = user.last_name
+            person.username = user.username
+            edit(PERSONS_TABLE,
+                 id=person.id, first_name=person.first_name, last_name=person.last_name, username=person.username)
             chat_id = person.id
 
             # Knowing pressed key
@@ -68,6 +127,12 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     if pressed_btn.id == 1:
                         text = 'Any text you type in here will be added to your pc clipboard.\n'
                         text += 'Use ((Back)) button to stop.'
+
+                    await context.bot.send_message(
+                        chat_id if not persons else update.effective_user.id,
+                        text,
+                        reply_markup=reply_markup,
+                        parse_mode=parse_mode)
 
                 else:  # Pressed button was special
 
@@ -100,6 +165,12 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                             resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
                         text = update.message.text
 
+                    await context.bot.send_message(
+                        chat_id if not persons else update.effective_user.id,
+                        text,
+                        reply_markup=reply_markup,
+                        parse_mode=parse_mode)
+
             else:  # Received text was not a button
                 reply_markup = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=get_btn_list(person, person.btn_id))
                 text = update.message.text
@@ -110,14 +181,43 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     text += "`{copied}`".format(copied=pyperclip.paste().replace("\\", "\\\\").replace("`", r"\`"))
                     parse_mode = 'MarkdownV2'
 
-        await context.bot.send_message(
-            chat_id if not persons else update.effective_user.id,
-            text,
-            reply_markup=reply_markup,
-            parse_mode=parse_mode)
+                await context.bot.send_message(
+                    chat_id if not persons else update.effective_user.id,
+                    text,
+                    reply_markup=reply_markup,
+                    parse_mode=parse_mode)
 
     except telegram.error.BadRequest as e:
         print('main: ' + red(str(e)))
+
+
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+
+    data = json.loads(query.data)
+    if data['name'] == 'ADMIN_REQ':
+        if data['value']['status'] == 'ACC':
+            await query.answer(text='Accepted')
+
+            result = add(PERSONS_TABLE, Person(chat_id=data['value']['chat_id']))
+            if result:
+                await query.edit_message_text(text='New user added successfully.', reply_markup=None)
+                await context.bot.send_message(
+                    chat_id=data['value']['chat_id'],
+                    text='Your permission accepted',
+                    reply_markup=ReplyKeyboardMarkup(get_btn_list(Person(btn_id=0, admin=0), 0)))
+            else:
+                await query.message.delete()
+        elif data['value']['status'] == 'REJ':
+            await query.answer(text='Rejected')
+
+            await query.edit_message_text(text='Permission denied.', reply_markup=None)
+            await context.bot.send_message(
+                chat_id=data['value']['chat_id'],
+                text='Permission denied',
+                reply_markup=ReplyKeyboardRemove())
+
+    await query.edit_message_text(text=f"Selected option: {query.data}")
 
 
 def main() -> None:
