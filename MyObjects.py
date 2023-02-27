@@ -1,7 +1,5 @@
 import json
 
-from Functions.Coloring import red
-
 
 class MyObject:
     def to_json(self):
@@ -25,7 +23,7 @@ class MyObject:
 
 class Person(MyObject):
     def __init__(self,
-                 id: int = 0,
+                 id: int | None = 0,
                  chat_id: int = 0,
                  first_name: str = '',
                  last_name: str = '',
@@ -54,7 +52,7 @@ class Person(MyObject):
         self.first_name = first_name
         self.last_name = last_name
         self.username = username
-        self.progress = json.loads(progress) if progress else None
+        self.progress = json.loads(progress.replace("'", "\"")) if progress else None
         self.admin = admin
         self.btn_id = btn_id
         self.sp_btn_id = sp_btn_id
@@ -68,7 +66,7 @@ class Button(MyObject):
                  id: int = 0,
                  text: str = '',
                  admin: int = 0,
-                 messages: str = '',
+                 messages: str | None = None,
                  belong: int = 0,
                  btns: str = '',
                  sp_btns: str = '',

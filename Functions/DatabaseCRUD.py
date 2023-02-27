@@ -1,3 +1,4 @@
+import json
 import sqlite3
 
 from Functions.Coloring import green, bright, red, yellow, cyan
@@ -100,9 +101,13 @@ def add(table: str, my_object):
     print(f'add: {yellow(table)} | Adding new item to {bright(table)} table')
 
     pairs = my_object.__dict__
-    pairs = {key: val for key, val in pairs.items() if val is not None}
+    pairs = {key: val for key, val in pairs.items() if val is not None}  # Removing 'None' values
+    pairs = {key: (f"{json.dumps(val)}" if type(val) == list else val) for key, val in pairs.items()}
+    pairs = {key: (f"{json.dumps(val)}" if type(val) == dict else val) for key, val in pairs.items()}
+    pairs = {key: (f"'{val}'" if type(val) == str else val) for key, val in pairs.items()}
+
     keys_str = ', '.join(pairs.keys())
-    vals_str = ', '.join(map(lambda s: f"'{s}'" if type(s) == str or list else s, pairs.values()))
+    vals_str = ', '.join(map(str, pairs.values()))
     sql = f"INSERT INTO {table} ({keys_str}) VALUES ({vals_str})"
 
     print('add: ' + cyan('Completed sql query: ') + sql)
