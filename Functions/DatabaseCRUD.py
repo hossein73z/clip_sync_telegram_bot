@@ -48,7 +48,7 @@ def read(my_class: Base, **kwargs):
             if type(val) == set:
                 query = query.filter(getattr(my_class, key).in_(val))
             else:
-                query = query.filter(getattr(my_class, key) == val).all()
+                query = query.filter(getattr(my_class, key) == val)
 
         result: list[my_class] = []
         for item in query:
@@ -72,4 +72,3 @@ def edit(my_class: Base, id, **kwargs):
         print(f"edit:  {yellow(str(my_class))}, {magenta(kwargs)}: {red(str(e))}")
     finally:
         session.close()
-
