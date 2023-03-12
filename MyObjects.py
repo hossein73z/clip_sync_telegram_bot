@@ -103,7 +103,7 @@ class Setting(Base):
         self.value = value
 
 
-class Messages(Base):
+class Message(Base):
     __tablename__ = "messages"
 
     id = Column(name="id", type_=Integer, primary_key=True)
