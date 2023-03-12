@@ -1,138 +1,103 @@
-import json
+from sqlalchemy import create_engine, Column, String, Integer, JSON
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+engine = create_engine("sqlite:///database.db")
+factory = sessionmaker(bind=engine)
+
+Base = declarative_base()
+Base.get_table_name = lambda self: self.__tablename__
 
 
-class MyObject:
-    def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+class Person(Base):
+    __tablename__ = "persons"
 
-    @staticmethod
-    def float_to_string(value: float):
-        text = str(value)
-        texts = text.split('e')
-        print(texts)
-        if len(texts) < 2:
-            return str(value)
-        else:
-            if int(texts[1]) < 0:
-                result = '0.' + '0' * abs(int(texts[1]) + 1) + texts[0].replace('.', '')
-            else:
-                result = texts[0].replace('.', '') + '0' * abs(int(texts[1]))
+    id = Column(name="id", type_=Integer, primary_key=True)
+    chat_id = Column(name="chat_id", type_=Integer)
+    first_name = Column(name="first_name", type_=String)
+    last_name = Column(name="last_name", type_=String)
+    username = Column(name="username", type_=String)
+    progress = Column(name="progress", type_=JSON)
+    admin = Column(name="admin", type_=Integer)
+    btn_id = Column(name="btn_id", type_=Integer)
+    sp_btn_id = Column(name="sp_btn_id", type_=Integer)
 
-            return result
-
-
-class Person(MyObject):
     def __init__(self,
-                 id: int | None = 0,
-                 chat_id: int = 0,
-                 first_name: str = '',
-                 last_name: str = '',
-                 username: str = '',
-                 progress: str = '',
-                 admin: int = 0,
+                 id: int,
+                 chat_id: int,
+                 first_name: str,
+                 admin: int,
+                 last_name: str = None,
+                 username: str = None,
+                 progress: dict = None,
                  btn_id: int = 0,
-                 sp_btn_id: int = 0,
-                 **kwargs):
-        """
-        Create a Person object.
-
-        :param id:
-        :param chat_id:
-        :param first_name:
-        :param last_name:
-        :param username:
-        :param progress:
-        :param admin:
-        :param btn_id:
-        :param sp_btn_id:
-        """
-
+                 sp_btn_id: int = None):
         self.id = id
         self.chat_id = chat_id
         self.first_name = first_name
         self.last_name = last_name
         self.username = username
-        self.progress = json.loads(progress.replace("'", "\"")) if progress else None
+        self.progress = progress
         self.admin = admin
         self.btn_id = btn_id
         self.sp_btn_id = sp_btn_id
 
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
 
+class Button(Base):
+    __tablename__ = "btns"
 
-class Button(MyObject):
+    id = Column(name="id", type_=Integer, primary_key=True)
+    text = Column(name="text", type_=String)
+    admin = Column(name="admin", type_=Integer)
+    messages = Column(name="messages", type_=JSON)
+    belong = Column(name="belong", type_=Integer)
+    btns = Column(name="btns", type_=JSON)
+    sp_btns = Column(name="sp_btns", type_=JSON)
+
     def __init__(self,
-                 id: int = 0,
-                 text: str = '',
-                 admin: int = 0,
-                 messages: str | None = None,
-                 belong: int = 0,
-                 btns: str = '',
-                 sp_btns: str = '',
-                 **kwargs):
-        """
-        Create a Button object.
-
-        :param id:
-        :param text:
-        :param admin:
-        :param messages:
-        :param belong:
-        :param btns:
-        :param sp_btns:
-        """
-
+                 id: int,
+                 text: str,
+                 admin: int,
+                 btns: list = None,
+                 sp_btns: list = None,
+                 messages: list = None,
+                 belong: int = None):
         self.id = id
         self.text = text
         self.admin = admin
         self.messages = messages
         self.belong = belong
-        self.btns = json.loads(btns) if btns else None
-        self.sp_btns = json.loads(sp_btns) if sp_btns else None
-
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
+        self.btns = btns
+        self.sp_btns = sp_btns
 
 
-class SPButton(MyObject):
+class SPButton(Base):
+    __tablename__ = "sp_btns"
+
+    id = Column(name="id", type_=Integer, primary_key=True)
+    text = Column(name="text", type_=String)
+    admin = Column(name="admin", type_=Integer)
+
     def __init__(self,
-                 id: int = 0,
-                 text: str = '',
-                 admin: int = 0,
-                 **kwargs):
-        """
-        Create a SPButton object.
-
-        :param id:
-        :param text:
-        :param admin:
-        """
-
+                 id: int,
+                 text: str,
+                 admin: int):
         self.id = id
         self.text = text
         self.admin = admin
 
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
 
+class Setting(Base):
+    __tablename__ = "settings"
 
-class Setting(MyObject):
+    id = Column(name="id", type_=Integer, primary_key=True)
+    name = Column(name="name", type_=Integer)
+    value = Column(name="value", type_=String)
+
     def __init__(self,
-                 id: int = 0,
-                 name: str = '',
-                 value=None,
-                 **kwargs):
-        """
-        Create a Button object.
-
-        :param id: Setting id
-        :param name: Setting name
-        :param value: Setting value
-        """
+                 id: int,
+                 name: str,
+                 value: str = None):
         self.id = id
         self.name = name
         self.value = value
-
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
