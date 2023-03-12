@@ -32,8 +32,10 @@ def add(my_object: Base):
     session = factory()
     try:
         session.add(my_object)
+        return True
     except Exception as e:
         print(f"add:  {yellow(str(my_object))}: {red(str(e))}")
+        return False
     finally:
         session.commit()
         session.close()
