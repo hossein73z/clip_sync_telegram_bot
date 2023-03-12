@@ -1,5 +1,4 @@
 import json
-import logging
 
 import pyperclip
 import telegram
@@ -10,9 +9,6 @@ from Functions.ButtonFunctions import get_btn_list, get_pressed_btn
 from Functions.Coloring import magenta, red, bright
 from Functions.DatabaseCRUD import init, read, add, edit
 from MyObjects import Person, Button, SPButton, Setting
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
 async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -120,14 +116,15 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             joined = True
             try:
                 text = 'Hi'
-                if person.progress['name'] == 'JOIN' and person.progress['value']['status'] == 'accepted':
-                    joined = True
-                elif person.progress['name'] == 'JOIN' and person.progress['value']['status'] == 'waiting':
-                    joined = False
-                    text = 'Please stand by.'
-                elif person.progress['name'] == 'JOIN' and person.progress['value']['status'] == 'rejected':
-                    joined = False
-                    text = 'You do not have permission to use this bot'
+                if person.progress:
+                    if person.progress['name'] == 'JOIN' and person.progress['value']['status'] == 'accepted':
+                        joined = True
+                    elif person.progress['name'] == 'JOIN' and person.progress['value']['status'] == 'waiting':
+                        joined = False
+                        text = 'Please stand by.'
+                    elif person.progress['name'] == 'JOIN' and person.progress['value']['status'] == 'rejected':
+                        joined = False
+                        text = 'You do not have permission to use this bot'
             except TypeError or KeyError or IndexError as e:
                 text = 'Error'
                 print('main: ' + red(str(e)))
