@@ -101,3 +101,14 @@ class Setting(Base):
         self.id = id
         self.name = name
         self.value = value
+
+
+class Messages(Base):
+    __tablename__ = "messages"
+
+    id = Column(name="id", type_=Integer, primary_key=True)
+    text = Column(name="text", type_=String, nullable=False)
+
+    def __init__(self, id: int, text: str):
+        self.id = id
+        self.text = text
