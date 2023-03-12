@@ -23,15 +23,15 @@ class Person(Base):
     sp_btn_id = Column(name="sp_btn_id", type_=Integer)
 
     def __init__(self,
-                 id: int,
                  chat_id: int,
                  first_name: str,
-                 admin: int,
-                 last_name: str = None,
-                 username: str = None,
-                 progress: dict = None,
+                 admin: int | None = None,
+                 id: int | None = None,
+                 last_name: str | None = None,
+                 username: str | None = None,
+                 progress: dict | None = None,
                  btn_id: int = 0,
-                 sp_btn_id: int = None):
+                 sp_btn_id: int | None = None):
         self.id = id
         self.chat_id = chat_id
         self.first_name = first_name
@@ -55,13 +55,13 @@ class Button(Base):
     sp_btns = Column(name="sp_btns", type_=JSON)
 
     def __init__(self,
-                 id: int,
                  text: str,
                  admin: int,
-                 btns: list = None,
-                 sp_btns: list = None,
-                 messages: list = None,
-                 belong: int = None):
+                 id: int | None = None,
+                 btns: list | None = None,
+                 sp_btns: list | None = None,
+                 messages: list | None = None,
+                 belong: int | None = None):
         self.id = id
         self.text = text
         self.admin = admin
