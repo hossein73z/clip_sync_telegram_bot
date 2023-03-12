@@ -25,7 +25,7 @@ class Person(Base):
     def __init__(self,
                  chat_id: int,
                  first_name: str,
-                 admin: int | None = None,
+                 admin: int = 0,
                  id: int | None = None,
                  last_name: str | None = None,
                  username: str | None = None,
