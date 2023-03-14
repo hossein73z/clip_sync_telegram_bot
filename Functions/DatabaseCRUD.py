@@ -25,7 +25,7 @@ def init():
 
     for item in objects:  # Add default values to tables
         try:
-            session.add(item)
+            session.merge(item)
             session.commit()
         except Exception as e:
             print(f"init: {red(str(e))}")

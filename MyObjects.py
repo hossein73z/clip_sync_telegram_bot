@@ -106,7 +106,8 @@ class Setting(Base):
                  value: str = None):
         self.id = id
         self.name = name
-        self.value = value
+        if value:
+            self.value = value
 
 
 class Message(Base):
