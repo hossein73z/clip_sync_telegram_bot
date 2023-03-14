@@ -1,14 +1,13 @@
 from telegram import KeyboardButton
 
 from Functions.DatabaseCRUD import read
-from MyObjects import Person, Button, SPButton
+from MyObjects import Button, SPButton
 
 
-def get_btn_list(person_btn_id: int, admin: int, button_id: int):
+def get_btn_list(admin: int, button_id: int):
     """
     Get all the buttons from database
 
-    :param person_btn_id:ID of person's last pressed button
     :param admin: Person administration level
     :param button_id: ID of the button to get its subset buttons
     :return: array of array of KeyboardButton object or None if there's no subset buttons

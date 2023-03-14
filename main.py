@@ -35,7 +35,7 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         person = persons[0]
                         chat_id = person.id
                         reply_markup = ReplyKeyboardMarkup(
-                            resize_keyboard=True, keyboard=get_btn_list(person.btn_id, person.admin, person.btn_id))
+                            resize_keyboard=True, keyboard=get_btn_list(admin=person.admin, button_id=person.btn_id))
                         text = 'Wellcome to the Bot'
 
                         await context.bot.send_message(
@@ -141,7 +141,7 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         edit(Person, id=person.id, btn_id=pressed_btn.id)
 
                         reply_markup = ReplyKeyboardMarkup(
-                            resize_keyboard=True, keyboard=get_btn_list(person.btn_id, person.admin, pressed_btn.id))
+                            resize_keyboard=True, keyboard=get_btn_list(admin=person.admin, button_id=pressed_btn.id))
 
                         if pressed_btn.messages:  # Pressed button has predefined message(s)
                             messages = pressed_btn.messages
@@ -172,7 +172,7 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                                 edit(Person, id=person.id, btn_id=last_btns[0].belong)
                                 reply_markup = ReplyKeyboardMarkup(
                                     resize_keyboard=True,
-                                    keyboard=get_btn_list(person.btn_id, person.admin, last_btns[0].belong))
+                                    keyboard=get_btn_list(admin=person.admin, button_id=last_btns[0].belong))
                                 text = update.message.text
 
                             else:  # No way back
@@ -188,11 +188,13 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                                 copied=pyperclip.paste().replace("\\", "\\\\").replace("`", r"\`"))
                             parse_mode = 'MarkdownV2'
                             reply_markup = ReplyKeyboardMarkup(
-                                resize_keyboard=True, keyboard=get_btn_list(person.btn_id, person.admin, person.btn_id))
+                                resize_keyboard=True,
+                                keyboard=get_btn_list(admin=person.admin, button_id=person.btn_id))
 
                         else:
                             reply_markup = ReplyKeyboardMarkup(
-                                resize_keyboard=True, keyboard=get_btn_list(person.btn_id, person.admin, person.btn_id))
+                                resize_keyboard=True,
+                                keyboard=get_btn_list(admin=person.admin, button_id=person.btn_id))
                             text = update.message.text
 
                         await context.bot.send_message(
@@ -202,9 +204,8 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                             parse_mode=parse_mode)
 
                 else:  # Received text was not a button
-                    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True,
-                                                       keyboard=get_btn_list(person.btn_id, person.admin,
-                                                                             person.btn_id))
+                    reply_markup = ReplyKeyboardMarkup(
+                        resize_keyboard=True, keyboard=get_btn_list(admin=person.admin, button_id=person.btn_id))
                     text = update.message.text
 
                     if person.btn_id == 1:
@@ -255,8 +256,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         await context.bot.send_message(
                             chat_id=person.chat_id,
                             text='Your permission accepted',
-                            reply_markup=ReplyKeyboardMarkup(get_btn_list(person_btn_id=0, admin=0, button_id=0),
-                                                             resize_keyboard=True))
+                            reply_markup=ReplyKeyboardMarkup(get_btn_list(admin=0, button_id=0), resize_keyboard=True))
 
                     elif data['value']['status'] == 'REJ':  # Join new user rejected
                         progress = person.progress
