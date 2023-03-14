@@ -130,8 +130,9 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 print('main: ' + red(str(e)))
 
             if joined:
-                # Knowing pressed key
+                # Finding pressed key
                 pressed_dict = get_pressed_btn(person.btn_id, person.admin, update.message.text)
+
                 if pressed_dict:  # Received text was a button
 
                     if not pressed_dict['is_special']:  # Pressed button was nat special
@@ -141,17 +142,25 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
                         reply_markup = ReplyKeyboardMarkup(
                             resize_keyboard=True, keyboard=get_btn_list(person.btn_id, person.admin, pressed_btn.id))
-                        text = update.message.text
 
-                        if pressed_btn.id == 1:
-                            text = 'Any text you type in here will be added to your pc clipboard.\n'
-                            text += 'Use ((Back)) button to stop.'
+                        if pressed_btn.messages:  # Pressed button has predefined message(s)
+                            messages = pressed_btn.messages
 
-                        await context.bot.send_message(
-                            chat_id if not persons else update.effective_user.id,
-                            text,
-                            reply_markup=reply_markup,
-                            parse_mode=parse_mode)
+                            for message in messages:
+                                text = message.text
+                                await context.bot.send_message(
+                                    chat_id if not persons else update.effective_user.id,
+                                    text,
+                                    reply_markup=reply_markup,
+                                    parse_mode=parse_mode)
+
+                        else:  # Pressed button has no message registered on the database
+                            text = update.message.text
+                            await context.bot.send_message(
+                                chat_id if not persons else update.effective_user.id,
+                                text,
+                                reply_markup=reply_markup,
+                                parse_mode=parse_mode)
 
                     else:  # Pressed button was special
 
