@@ -6,7 +6,7 @@ from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKe
 from telegram.ext import ContextTypes, ApplicationBuilder, MessageHandler, CallbackQueryHandler, filters
 
 from Functions.ButtonFunctions import get_btn_list, get_pressed_btn
-from Functions.Coloring import magenta, red, bright
+from Functions.Coloring import magenta, red, bright, yellow
 from Functions.DatabaseCRUD import init, read, add, edit
 from MyObjects import Person, Button, SPButton, Setting
 
@@ -89,7 +89,6 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 text += f'Username: @{user.username if user.username else ""} ('
                 text = text.replace("\\", "\\\\").replace("`", r"\`").replace(r'.', r'\.').replace('(', r'\(')
                 text += f"[Profile](tg://user?id={user.id})" + r"\)"
-                print(text)
 
                 for admin in admins:
                     await context.bot.send_message(
@@ -101,7 +100,7 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 await context.bot.send_message(
                     user.id,
                     'Your request for using this bot has been sent to admin. Please be patient',
-                    reply_markup=None,
+                    reply_markup=ReplyKeyboardRemove(),
                     parse_mode=parse_mode)
 
         else:  # Person already exists on the database
@@ -220,7 +219,6 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         reply_markup=reply_markup,
                         parse_mode=parse_mode)
             else:
-                print(chat_id if not persons else update.effective_user.id)
                 await context.bot.send_message(
                     chat_id if not persons else update.effective_user.id,
                     text,
@@ -234,7 +232,6 @@ async def process(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
 
-    # {'name': 'JOIN_REQ', 'value': {'status': 'ACC', 'id': person.id}}
     data = json.loads(query.data)
     if data['name'] == 'JOIN_REQ':  # Join new user status response
         persons = read(Person, id=data['value']['id'])
@@ -247,7 +244,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     if data['value']['status'] == 'ACC':  # Join new user accepted
                         progress = person.progress
                         progress['value']['status'] = 'accepted'
-                        edit(Person, id=person.id, progress=json.dumps(progress))
+                        edit(Person, id=person.id, progress=progress)
 
                         text = query.message.text
                         text.replace('New person is requesting to use this bot', 'New user added successfully')
@@ -261,7 +258,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     elif data['value']['status'] == 'REJ':  # Join new user rejected
                         progress = person.progress
                         progress['value']['status'] = 'rejected'
-                        edit(Person, id=person.id, progress=json.dumps(progress))
+                        edit(Person, id=person.id, progress=progress)
 
                         text = query.message.text
                         text.replace('New person is requesting to use this bot', 'Permission denied')
@@ -286,6 +283,12 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
             except IndexError as e:
                 print('button: ' + red(str(e)))
+        else:
+            await query.answer("Unrecognized")
+            await context.bot.deleteMessage(update.effective_user.id, update.effective_message.id)
+    else:
+        await query.answer("Unrecognized")
+        await context.bot.deleteMessage(update.effective_user.id, update.edited_message.id)
 
 
 def main() -> None:
