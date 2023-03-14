@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine, Column, String, Integer, JSON
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Column, String, Integer, JSON, Table, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 engine = create_engine("sqlite:///database.db")
@@ -7,6 +7,11 @@ factory = sessionmaker(bind=engine)
 
 Base = declarative_base()
 Base.get_table_name = lambda self: self.__tablename__
+
+btns_msgs_rel = Table("btns_msgs_rel", Base.metadata,
+                      Column(ForeignKey('btns.id'), name="btn_id", type_=Integer, ),
+                      Column(ForeignKey('messages.id'), name="msg_id", type_=Integer)
+                      )
 
 
 class Person(Base):
@@ -49,7 +54,7 @@ class Button(Base):
     id = Column(name="id", type_=Integer, primary_key=True)
     text = Column(name="text", type_=String)
     admin = Column(name="admin", type_=Integer)
-    messages = Column(name="messages", type_=JSON)
+    messages = relationship("Message", secondary=btns_msgs_rel, uselist=True)
     belong = Column(name="belong", type_=Integer)
     btns = Column(name="btns", type_=JSON)
     sp_btns = Column(name="sp_btns", type_=JSON)
@@ -65,7 +70,8 @@ class Button(Base):
         self.id = id
         self.text = text
         self.admin = admin
-        self.messages = messages
+        if type(messages) == list:
+            self.messages = messages
         self.belong = belong
         self.btns = btns
         self.sp_btns = sp_btns
