@@ -13,3 +13,5 @@ To use this bot, you need to:
 Note:
 - The first user messaging the bot will be set as admin. Other users will need admin permission to be able to use the bot. 
 - To reset the bot, just delete “database.db” file and restart the bot.
+
+I know the code is too complex for such a simple usage, but I decided to make room for future improvements.
